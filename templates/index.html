@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Meal Planner</title>
+    <!-- <link rel="stylesheet" href="index.css" /> -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <!-- <script src="index.js"></script> -->
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+      * {
+        font-family: 'DM Sans', sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+      }
+
+      h1 {
+        font-family: 'DM Sans', sans-serif;
+        font-size: 60px;
+        font-weight: 500;
+        font-style: normal;
+
+        color: #5e503f;
+      }
+
+      h4 {
+        font-family: 'DM Sans', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        font-style: normal;
+
+        text-transform: uppercase;
+
+        color: #5e503f;
+      }
+
+      .container-fluid {
+        width: 100%;
+        height: 100%;
+
+        display: flex;
+        gap: 24px;
+        padding: 120px;
+        background-color: #fffcf2;
+      }
+
+      select,
+      input {
+        border-radius: 20px !important;
+      }
+
+      .nav-fill .nav-item .nav-link.active {
+        background-color: #5e503f;
+        color: white;
+      }
+
+      .nav-fill .nav-item .nav-link {
+        color: #403d39;
+      }
+
+      .submit-button {
+        border-radius: 20px !important;
+        background-color: #5e503f;
+        color: white;
+      }
+
+      .submit-button:hover {
+        border-radius: 20px !important;
+        background-color: #393127;
+        color: white;
+      }
+
+      .photo-link {
+        display: block;
+        position: relative;
+      }
+
+      .photo-link img {
+        width: 100%;
+        height: auto;
+      }
+
+      .photo-link.active img {
+        border: 2px solid #007bff;
+        /* Highlight selected image */
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container-fluid row g-0">
+      <div class="col">
+        <h1>Meal Planner</h1>
+        <p>recipes was inspired from <a href="https://www.food.com/">Food.com</a></p>
+        <p>example images was retrieved from <a href="https://github.com/google-research-datasets/Nutrition5k/">Nutrition5k datset by Thames et al. (2021)</a></p>
+      </div>
+      <div class="col">
+        <form
+          id="selection-form"
+          class="d-flex row gap-4"
+          action="/"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <!-- Hidden input to store selected images -->
+          <input type="hidden" id="selected-images" name="selectedImages" />
+
+          <!-- User Type -->
+          <div class="mt-3">
+            <h4>Personal Type</h4>
+            <select
+              class="form-select form-select-md mb-3"
+              id="userType"
+              aria-label="Large select example"
+              name="userType"
+            >
+              <option selected>Select personal type</option>
+              <option value="37449">A</option>
+              <option value="383346">B</option>
+              <option value="169430">C</option>
+              <option value="128473">D</option>
+              <option value="89831">E</option>
+              <option value="58104">F</option>
+            </select>
+          </div>
+
+          <!-- Nav tabs -->
+          <ul class="nav nav-pills nav-fill" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link active"
+                id="tab1-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#tab1"
+                type="button"
+                role="tab"
+                aria-controls="tab1"
+                aria-selected="true"
+              >
+                Select your images
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="tab2-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#tab2"
+                type="button"
+                role="tab"
+                aria-controls="tab2"
+                aria-selected="false"
+              >
+                Choose from example images
+              </button>
+            </li>
+          </ul>
+
+          <!-- Image: tab -->
+          <div class="tab-content" id="myTabContent">
+            <!-- image picker -->
+            <div
+              class="tab-pane fade show active"
+              id="tab1"
+              role="tabpanel"
+              aria-labelledby="tab1-tab"
+            >
+              <!-- File input section -->
+              <div class="mt-2 mb-3" id="file-input-container">
+                <div class="input-pair mb-3">
+                  <h4 for="rgbFile" class="form-label">RGB</h4>
+                  <input type="file" class="form-control mb-2" name="rgbFile" />
+                  <h4 for="depthFile" class="form-label">Depth</h4>
+                  <input type="file" class="form-control mb-2" name="depthFile" />
+                </div>
+              </div>
+              <button type="button" class="btn btn-success mb-3" id="add-btn">Add</button>
+              <button type="button" class="btn btn-danger mb-3" id="delete-btn">Delete</button>
+            </div>
+            <!-- fetch google cloud photo -->
+            <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
+              <div class="container text-center">
+                <div class="row row-cols-3 g-3" id="photo-container"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Meal Eaten: checkbox -->
+          <div>
+            <h4>Meal Eaten</h4>
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="breakfast"
+                name="meals"
+                value="0"
+              />
+              <label class="form-check-label" for="breakfast">Breakfast</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" id="lunch" name="meals" value="1" />
+              <label class="form-check-label" for="lunch">Lunch</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" id="snack" name="meals" value="2" />
+              <label class="form-check-label" for="snack">Snack</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" id="dinner" name="meals" value="3" />
+              <label class="form-check-label" for="dinner">Dinner</label>
+            </div>
+          </div>
+
+          <!-- submit button -->
+          <button type="submit" class="submit-button btn mt-5 p-2">
+            Generate Recipes
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill="currentColor"
+              class="bi bi-arrow-right-short"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"
+              />
+            </svg>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+      integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+      crossorigin="anonymous"
+    ></script>
+    <!-- hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee  -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const photoContainer = document.getElementById('photo-container')
+        const selectedImagesInput = document.getElementById('selected-images')
+        const maxSelections = 4 // Maximum number of selectable images
+        const numbers = [
+          1562085185, 1566414342, 1566502573, 1562963325, 1558719994, 1563309398, 1566419635,
+          1561739805, 1566931674,
+        ]
+
+        numbers.forEach((number) => {
+          const col = document.createElement('div')
+          col.className = 'col'
+
+          const link = document.createElement('a')
+          link.href = '#' // Placeholder href
+          link.className = 'photo-link'
+          link.dataset.imageUrl = numberToRgbLink(number) // Store the URL in a data attribute
+
+          const img = document.createElement('img')
+          img.src = numberToRgbLink(number)
+          img.alt = 'Loading...'
+
+          link.appendChild(img)
+          col.appendChild(link)
+          photoContainer.appendChild(col)
+
+          // Add click event to handle selection
+          link.addEventListener('click', (event) => {
+            event.preventDefault()
+            if (link.classList.contains('active')) {
+              link.classList.remove('active')
+            } else {
+              if (document.querySelectorAll('.photo-link.active').length < maxSelections) {
+                link.classList.add('active')
+              } else {
+                alert(`You can only select up to ${maxSelections} images.`)
+              }
+            }
+            updateSelectedImages()
+          })
+        })
+
+        // Function to update the hidden input field with selected image numbers
+        function updateSelectedImages() {
+          const selectedImages = Array.from(document.querySelectorAll('.photo-link.active')).map(
+            (link) => extractNumberFromUrl(link.dataset.imageUrl)
+          )
+          selectedImagesInput.value = JSON.stringify(selectedImages) // Store as JSON
+          console.log(selectedImagesInput)
+        }
+      })
+
+      // Function to extract the number from the image URL
+      function extractNumberFromUrl(url) {
+        const regex = /dish_(\d+)\/rgb\.png/
+        const match = url.match(regex)
+        return match ? parseInt(match[1], 10) : null
+      }
+
+      function numberToRgbLink(number) {
+        return (
+          'https://storage.googleapis.com/nutrition5k_dataset/nutrition5k_dataset/imagery/realsense_overhead/dish_' +
+          number +
+          '/rgb.png'
+        )
+      }
+
+      const maxInputs = 8
+      const fileContainer = document.getElementById('file-input-container')
+      const addButton = document.getElementById('add-btn')
+      const deleteButton = document.getElementById('delete-btn')
+
+      // Function to add a new pair of RGB and Depth inputs
+      function addInputPair() {
+        const fileInputs = fileContainer.querySelectorAll('.input-pair')
+        if (fileInputs.length < maxInputs / 2) {
+          const inputPair = document.createElement('div')
+          inputPair.className = 'input-pair mb-3'
+
+          const rgbLabel = document.createElement('h4')
+          rgbLabel.className = 'form-label'
+          rgbLabel.innerText = 'RGB'
+
+          const rgbInput = document.createElement('input')
+          rgbInput.type = 'file'
+          rgbInput.className = 'form-control mb-2'
+          rgbInput.name = `rgbFile${fileInputs.length + 1}`
+
+          const depthLabel = document.createElement('h4')
+          depthLabel.className = 'form-label'
+          depthLabel.innerText = 'Depth'
+
+          const depthInput = document.createElement('input')
+          depthInput.type = 'file'
+          depthInput.className = 'form-control mb-2'
+          depthInput.name = `depthFile${fileInputs.length + 1}`
+
+          inputPair.appendChild(rgbLabel)
+          inputPair.appendChild(rgbInput)
+          inputPair.appendChild(depthLabel)
+          inputPair.appendChild(depthInput)
+
+          fileContainer.appendChild(inputPair)
+        }
+      }
+
+      // Function to delete the last pair of RGB and Depth inputs
+      function deleteInputPair() {
+        const fileInputs = fileContainer.querySelectorAll('.input-pair')
+        if (fileInputs.length > 1) {
+          fileContainer.removeChild(fileInputs[fileInputs.length - 1])
+        }
+      }
+
+      // Attach event listeners to the buttons
+      addButton.addEventListener('click', addInputPair)
+      deleteButton.addEventListener('click', deleteInputPair)
+    </script>
+    <!-- hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee  -->
+  </body>
+</html>
